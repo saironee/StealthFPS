@@ -44,6 +44,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mother)
 	TObjectPtr<class UGunDataAsset> Mother;
 
+	UFUNCTION(BlueprintCallable)
 	virtual void Attach(AActor* Father) override;
 
 //Input
