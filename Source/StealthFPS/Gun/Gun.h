@@ -10,11 +10,13 @@
 #include <InputActionValue.h>
 
 #include "Interface/IReloadInterface.h"
+#include "Interface/IAttachInterface.h"
 
 #include "Gun.generated.h"
 
 UCLASS()
-class STEALTHFPS_API AGun : public AActor, public IIReloadInterface 
+class STEALTHFPS_API AGun : public AActor, public IIReloadInterface,
+public IIAttachInterface
 {
 	GENERATED_BODY()
 	
@@ -41,6 +43,8 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mother)
 	TObjectPtr<class UGunDataAsset> Mother;
+
+	virtual void Attach(AActor* Father) override;
 
 //Input
 protected:

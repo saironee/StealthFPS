@@ -74,6 +74,10 @@ void AGun::SetupPlayerInputComponent()
 	}
 }
 
+void AGun::Attach(AActor* Father)
+{
+}
+
 void AGun::Fire(const FInputActionValue& Value)
 {
 	
