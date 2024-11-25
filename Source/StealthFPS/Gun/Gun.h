@@ -10,13 +10,11 @@
 #include <InputActionValue.h>
 
 #include "Interface/IReloadInterface.h"
-#include "Interface/IAttachInterface.h"
 
 #include "Gun.generated.h"
 
 UCLASS()
-class STEALTHFPS_API AGun : public AActor, public IIReloadInterface,
-public IIAttachInterface
+class STEALTHFPS_API AGun : public AActor, public IIReloadInterface
 {
 	GENERATED_BODY()
 	
@@ -39,13 +37,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Body)
 	TObjectPtr<class UStaticMeshComponent> Body;
 
+	UFUNCTION(BlueprintCallable)
+	void RefreshBody();
 //Mother
 protected:
+	UFUNCTION(Blueprintable)
+	void SetMother(class UGunDataAsset* newMom) { Mother = newMom;};
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mother)
 	TObjectPtr<class UGunDataAsset> Mother;
 
-	UFUNCTION(BlueprintCallable)
-	virtual void Attach(AActor* Father) override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mother)
+	TObjectPtr<class ASTLTPlayerCharacter> FatherCharacter;
 
 //Input
 protected:
@@ -57,4 +60,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<class UInputAction> IAFire;
+
+//Animation
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
+	TObjectPtr<class UAnimInstance> PlayerAnimInstanse;
 };

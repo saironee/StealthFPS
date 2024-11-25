@@ -11,6 +11,8 @@
 #include <InputAction.h>
 #include <GameFramework/PlayerController.h>
 
+#include "Characters/STLTPlayerCharacter.h"
+
 // Sets default values
 AGun::AGun()
 {
@@ -46,17 +48,12 @@ void AGun::BeginPlay()
 			Subsystem->AddMappingContext(IMCGun, 1);
 		}
 	}
-
-	if(Mother != nullptr)
-		Body->SetStaticMesh(Mother->BodyMesh);
-	Body->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called every frame
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AGun::SetupPlayerInputComponent()
@@ -74,13 +71,20 @@ void AGun::SetupPlayerInputComponent()
 	}
 }
 
-void AGun::Attach(AActor* Father)
+void AGun::RefreshBody()
 {
+	if(Mother != nullptr)
+		Body->SetStaticMesh(Mother->BodyMesh);
+	Body->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PlayerAnimInstanse = FatherCharacter->GetMesh()->GetAnimInstance();
 }
 
 void AGun::Fire(const FInputActionValue& Value)
 {
-	
+	if(FatherCharacter->bCanAim)
+		FatherCharacter->GetMesh()->PlayAnimation(Mother->AimFireAnimation, false);
+	else
+		FatherCharacter->GetMesh()->PlayAnimation(Mother->FireAnimation, false);
 }
 
 void AGun::Reload()
