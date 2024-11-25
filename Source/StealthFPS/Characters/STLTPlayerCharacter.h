@@ -59,6 +59,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Child")
 	TObjectPtr<class AGun> MyGun;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	class UCameraComponent* GetCameraComponent() { return Camera; };
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")

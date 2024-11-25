@@ -25,8 +25,12 @@ public:
 	uint8 MaxAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	uint8 SubAmmo;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	uint8 CurrentAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TSubclassOf<class UAnimInstance> AnimBlueprint;
+
 };

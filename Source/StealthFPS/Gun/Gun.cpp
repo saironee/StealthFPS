@@ -15,6 +15,8 @@
 #include <Components/SkeletalMeshComponent.h>
 #include "Animation/AnimInstance.h"
 
+#include "Camera/CameraComponent.h"
+
 // Sets default values
 AGun::AGun()
 {
@@ -92,22 +94,25 @@ void AGun::RefreshBody()
 void AGun::FireEnd()
 {
 	bIsFire = false;
-	UE_LOG(LogTemp, Display, TEXT("Hurry! Now"));
 }
 
 void AGun::Fire(const FInputActionValue& Value)
 {
-	if(Mother->CurrentAmmo <= 0)
+	if(Mother->CurrentAmmo <= 0 || bIsFire)
 		return;
 	
 	bIsFire = true;
 	Mother->CurrentAmmo--;
 
-	GetOwner()
+	UCameraComponent* PlayerCamera = FatherCharacter->GetCameraComponent();
 }
 
 void AGun::Reload()
 {
-	
+	if(Mother->CurrentAmmo + Mother->SubAmmo <= Mother->MaxAmmo)
+	{
+		Mother->CurrentAmmo += Mother->SubAmmo;
+		Mother->SubAmmo = 0;
+	}else
+		Mother->CurrentAmmo = Mother->MaxAmmo;
 }
-
