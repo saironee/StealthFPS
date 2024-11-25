@@ -12,6 +12,10 @@
 #include <GameFramework/PlayerController.h>
 
 #include "Characters/STLTPlayerCharacter.h"
+#include <Components/SkeletalMeshComponent.h>
+#include "Animation/AnimInstance.h"
+
+#include "Camera/CameraComponent.h"
 
 // Sets default values
 AGun::AGun()
@@ -40,15 +44,20 @@ void AGun::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController()))
+	// Input Mapping Context 추가
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController()))
 	{
 		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		if(Subsystem && IMCGun)
+		if (Subsystem && IMCGun)
 		{
 			Subsystem->AddMappingContext(IMCGun, 1);
 		}
 	}
+
+	// 직접 호출
+	SetupPlayerInputComponent();
 }
+
 
 // Called every frame
 void AGun::Tick(float DeltaTime)
@@ -76,19 +85,34 @@ void AGun::RefreshBody()
 	if(Mother != nullptr)
 		Body->SetStaticMesh(Mother->BodyMesh);
 	Body->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	PlayerAnimInstanse = FatherCharacter->GetMesh()->GetAnimInstance();
+	if(FatherCharacter = Cast<ASTLTPlayerCharacter>(GetOwner()))
+	{
+		FatherCharacter->GetMesh()->SetAnimInstanceClass(Mother->AnimBlueprint);
+	}
+}
+
+void AGun::FireEnd()
+{
+	bIsFire = false;
 }
 
 void AGun::Fire(const FInputActionValue& Value)
 {
-	if(FatherCharacter->bCanAim)
-		FatherCharacter->GetMesh()->PlayAnimation(Mother->AimFireAnimation, false);
-	else
-		FatherCharacter->GetMesh()->PlayAnimation(Mother->FireAnimation, false);
+	if(Mother->CurrentAmmo <= 0 || bIsFire)
+		return;
+	
+	bIsFire = true;
+	Mother->CurrentAmmo--;
+
+	UCameraComponent* PlayerCamera = FatherCharacter->GetCameraComponent();
 }
 
 void AGun::Reload()
 {
-	
+	if(Mother->CurrentAmmo + Mother->SubAmmo <= Mother->MaxAmmo)
+	{
+		Mother->CurrentAmmo += Mother->SubAmmo;
+		Mother->SubAmmo = 0;
+	}else
+		Mother->CurrentAmmo = Mother->MaxAmmo;
 }
-

@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Animation/ReloadNotify.h"
-#include "Interface/IReloadInterface.h"
+#include "STLTFireEndAnimNotify.h"
+#include "Interface/STLTFireEndInterface.h"
 #include "Characters/STLTPlayerCharacter.h"
 #include "Gun/Gun.h"
 
-void UReloadNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+void USTLTFireEndAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 	const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
@@ -16,9 +16,9 @@ void UReloadNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* 
 		ASTLTPlayerCharacter* PlayerCharacter = Cast<ASTLTPlayerCharacter>(MeshComp->GetOwner());
 		if(PlayerCharacter)
 		{
-			if(IIReloadInterface* ReloadAmmo = Cast<IIReloadInterface>(PlayerCharacter->MyGun))
+			if(ISTLTFireEndInterface* FireEnd = Cast<ISTLTFireEndInterface>(PlayerCharacter->MyGun))
 			{
-				ReloadAmmo->Reload();
+				FireEnd->FireEnd();
 			}
 		}
 	}

@@ -18,7 +18,8 @@
 
 #include <Components/SkeletalMeshComponent.h>
 
-ASTLTPlayerCharacter::ASTLTPlayerCharacter()
+ASTLTPlayerCharacter::ASTLTPlayerCharacter() :
+MyGun(nullptr)
 {
 	//Set Camera
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -132,16 +133,19 @@ void ASTLTPlayerCharacter::Look(const FInputActionValue& Value)
 
 void ASTLTPlayerCharacter::OnAim(const FInputActionValue& Value)
 {
+	bCanAim = true;
 	CameraTargetOffset = 50.f;
 }
 
 void ASTLTPlayerCharacter::ReleaseAim(const FInputActionValue& Value)
 {
+	bCanAim = false;
 	SetMovementType(GetMovementType());
 }
 
 void ASTLTPlayerCharacter::OnRun(const FInputActionValue& Value)
 {
+	bCanAim = false;
 	SetMovementType(EMovementType::RUN);
 }
 
