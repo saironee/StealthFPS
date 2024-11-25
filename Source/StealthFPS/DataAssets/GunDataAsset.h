@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class STEALTHFPS_API UGunDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
@@ -25,20 +25,12 @@ public:
 	uint8 MaxAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	uint8 SubAmmo;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	uint8 CurrentAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimSequence> IdleAnimation;
+	TSubclassOf<class UAnimInstance> AnimBlueprint;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimSequence> RunAnimation;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimSequence> AimAnimation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimSequence> FireAnimation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimSequence> AimFireAnimation;
 };

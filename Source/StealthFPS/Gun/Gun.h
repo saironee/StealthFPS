@@ -10,11 +10,12 @@
 #include <InputActionValue.h>
 
 #include "Interface/IReloadInterface.h"
+#include "Interface/STLTFireEndInterface.h"
 
 #include "Gun.generated.h"
 
 UCLASS()
-class STEALTHFPS_API AGun : public AActor, public IIReloadInterface 
+class STEALTHFPS_API AGun : public AActor, public IIReloadInterface, public ISTLTFireEndInterface
 {
 	GENERATED_BODY()
 	
@@ -37,13 +38,22 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Body)
 	TObjectPtr<class UStaticMeshComponent> Body;
 
+	UFUNCTION(BlueprintCallable)
+	void RefreshBody();
 //Mother
 protected:
+	UFUNCTION(Blueprintable)
+	void SetMother(class UGunDataAsset* newMom) { Mother = newMom;};
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mother)
 	TObjectPtr<class UGunDataAsset> Mother;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mother)
+	TObjectPtr<class ASTLTPlayerCharacter> FatherCharacter;
+
 //Input
 protected:
+	virtual void FireEnd() override;
 	void Fire(const FInputActionValue& Value);
 	virtual void Reload() override;
 protected:
@@ -52,4 +62,11 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<class UInputAction> IAFire;
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
+	uint8 bIsFire : 1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
+	uint8 bIsReload : 1;
 };
