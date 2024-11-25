@@ -16,6 +16,8 @@
 #include "DataAssets/MovementDataAsset.h"
 #include <GameFramework/CharacterMovementComponent.h>
 
+#include <Components/SkeletalMeshComponent.h>
+
 ASTLTPlayerCharacter::ASTLTPlayerCharacter()
 {
 	//Set Camera
