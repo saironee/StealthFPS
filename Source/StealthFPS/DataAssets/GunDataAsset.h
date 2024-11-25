@@ -28,17 +28,5 @@ public:
 	uint8 CurrentAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimationAsset> IdleAnimation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimationAsset> RunAnimation;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimationAsset> AimAnimation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimationAsset> FireAnimation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimationAsset> AimFireAnimation;
+	TSubclassOf<class UAnimInstance> AnimBlueprint;
 };

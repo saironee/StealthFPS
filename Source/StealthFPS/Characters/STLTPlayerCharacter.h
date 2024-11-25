@@ -56,6 +56,10 @@ public:
 	EMovementType GetMovementType() { return CurrentMovementType; }
 	
 	uint8 bCanAim : 1 = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Child")
+	TObjectPtr<class AGun> MyGun;
+	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<class UInputMappingContext> IMCDefault;

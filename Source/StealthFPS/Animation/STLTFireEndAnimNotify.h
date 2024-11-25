@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
-#include "ReloadNotify.generated.h"
+#include "STLTFireEndAnimNotify.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STEALTHFPS_API UReloadNotify : public UAnimNotify
+class STEALTHFPS_API USTLTFireEndAnimNotify : public UAnimNotify
 {
 	GENERATED_BODY()
-	
+
 public:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 };

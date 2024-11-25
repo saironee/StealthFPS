@@ -3,3 +3,9 @@
 
 #include "Animation/ReloadNotify.h"
 
+void UReloadNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+	const FAnimNotifyEventReference& EventReference)
+{
+	Super::Notify(MeshComp, Animation, EventReference);
+	
+}
