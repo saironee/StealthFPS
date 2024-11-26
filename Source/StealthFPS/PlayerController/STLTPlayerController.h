@@ -12,6 +12,8 @@ UCLASS()
 class STEALTHFPS_API ASTLTPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+public:
+	ASTLTPlayerController();
 
 public:
 	// 위젯 클래스 참조
