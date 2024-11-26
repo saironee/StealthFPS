@@ -62,6 +62,8 @@ protected:
 	void OnReload(const FInputActionValue& Value);
 	virtual void Reload() override;
 	virtual void EndReload() override;
+
+	void FireRay();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<class UInputMappingContext> IMCGun;
@@ -75,16 +77,10 @@ protected:
 //Fire
 protected:	
 	FTimerHandle FireSpeedHandle;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Fire")
-	float FireStartPosition = 0.f;
 	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
-	uint8 bIsFire : 1;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
-	uint8 bIsReload : 1;
+	uint8 bIsFire : 1 = false;
 
 //Reload
 protected:

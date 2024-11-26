@@ -16,6 +16,8 @@
 #include "Animation/AnimInstance.h"
 
 #include "Camera/CameraComponent.h"
+#include "Mecro/STLTLivingEntity.h"
+#include "Interface/ISTLTTakeAttack.h"
 
 // Sets default values
 AGun::AGun()
@@ -95,43 +97,42 @@ void AGun::RefreshBody()
 	{
 		FatherCharacter->GetMesh()->SetAnimInstanceClass(Mother->AnimBlueprint);
 	}
-
-	Mother->CurrentAmmo = Mother->MaxAmmo;
 }
 
 void AGun::FireEnd()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Finish Fire!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Finish Fire!"));
 	bIsFire = false;
 }
 
 void AGun::Fire(const FInputActionValue& Value)
 {
-	if(Mother->CurrentAmmo <= 0)
+	if(Mother->CurrentAmmo <= 0 || !bCanReload || bIsFire)
 		return;
 
-	if(!bIsFire)
-	{
-		bIsFire = true;
-		FireStartPosition = 0.f;
-		
-		Mother->CurrentAmmo--;
+	bIsFire = true;
+	FireRay();
+	Mother->CurrentAmmo--;
 
-		if(UAnimInstance* AnimInstance = Cast<UAnimInstance>(FatherCharacter->GetMesh()->GetAnimInstance()))
-		{
-			if(FatherCharacter->bCanAim)
-				AnimInstance->Montage_Play(Mother->AimFireMontage, Mother->FireSpeed);
-			else
-				AnimInstance->Montage_Play(Mother->FireMontage, Mother->FireSpeed);
-		}
+	if(UAnimInstance* AnimInstance = Cast<UAnimInstance>(FatherCharacter->GetMesh()->GetAnimInstance()))
+	{
+		if(FatherCharacter->bCanAim)
+			AnimInstance->Montage_Play(Mother->AimFireMontage, Mother->FireSpeed);
+		else
+			AnimInstance->Montage_Play(Mother->FireMontage, Mother->FireSpeed);
 	}
 }
 
 void AGun::OnReload(const FInputActionValue& Value)
 {
-	if(Mother->CurrentAmmo >= Mother->MaxAmmo)
+	if(Mother->CurrentAmmo >= Mother->MaxAmmo || bIsFire || Mother->SubAmmo <= 0)
+	{
+		FatherCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0.2f);
+		bCanReload = true;
 		return;
+	}
 		
+	
 	if(bCanReload)
 	{
 		bCanReload = false;
@@ -144,19 +145,12 @@ void AGun::OnReload(const FInputActionValue& Value)
 
 void AGun::Reload()
 {
-	if (Mother->CurrentAmmo >= Mother->MaxAmmo || Mother->SubAmmo <= 0)
-	{
-		if(FatherCharacter = Cast<ASTLTPlayerCharacter>(GetOwner()))
-		{
-			FatherCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
-		}
-		return;
-	}
-	
 	uint8 AmmoNeeded = Mother->MaxAmmo - Mother->CurrentAmmo;
-	
 	uint8 AmmoToReload = FMath::Min(AmmoNeeded, Mother->SubAmmo);
-
+	if(Mother->SubAmmo - AmmoToReload > Mother->SubMaxAmmo)
+	{
+		Mother->SubAmmo = 0;
+	}
 	// 탄약 갱신
 	Mother->CurrentAmmo += AmmoToReload;
 	Mother->SubAmmo -= AmmoToReload;
@@ -167,3 +161,32 @@ void AGun::EndReload()
 {
 	bCanReload = true;
 }
+
+void AGun::FireRay()
+{
+	FHitResult HitResult;
+
+	// 레이 시작 지점
+	FVector Start = FatherCharacter->GetCameraComponent()->GetComponentLocation();
+    
+	// 레이 끝 지점
+	FVector End = Start + (FatherCharacter->GetActorForwardVector() * Mother->Distance);
+
+	// 레이 트레이스 실행
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollsionLivingEntity))
+	{
+		// 충돌한 액터의 이름 출력
+		UE_LOG(LogTemp, Display, TEXT("%s"), *HitResult.GetActor()->GetName());
+
+		// 공격 처리
+		if (IISTLTTakeAttack* TakeAttack = Cast<IISTLTTakeAttack>(HitResult.GetActor()))
+		{
+			TakeAttack->TakeAttack(EAttackType::BULLET, HitResult.GetActor(), Mother->Damage);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Fail Cast TakeAttack"));
+		}
+	}
+}
+

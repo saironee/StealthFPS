@@ -22,5 +22,5 @@ public:
 	float CameraDistance = 90.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-	float CameraHeight = 50.f;
+	float CameraHeight = 88.f;
 };

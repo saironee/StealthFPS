@@ -19,7 +19,9 @@ public:
 	// Sets default values for this character's properties
 	ASTLTBaseCharacter();
 
-
+public:
+	virtual void BeginPlay() override;
+	
 //Dead or Alive
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -35,6 +37,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float MaxHealth;
 
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly = "Die")
+	uint8 bIsDead : 1;
+	
 //Cheat
 protected:
 	UFUNCTION(Exec)

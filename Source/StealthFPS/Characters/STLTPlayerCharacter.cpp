@@ -18,6 +18,8 @@
 
 #include <Components/SkeletalMeshComponent.h>
 
+#include "Components/CapsuleComponent.h"
+
 ASTLTPlayerCharacter::ASTLTPlayerCharacter() :
 MyGun(nullptr)
 {
@@ -209,12 +211,9 @@ void ASTLTPlayerCharacter::SetCamera(float DeltaTime)
 	float NewFOV = FMath::FInterpTo(CurrentFOV, CameraTargetOffset, DeltaTime, ZoomSpeed);
 	Camera->SetFieldOfView(NewFOV);
 
-	float CurrentHeight = Camera->GetRelativeLocation().Z;
+	float CurrentHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 	float NewHeight = FMath::FInterpTo(CurrentHeight, CameraTargetHeightOffset, DeltaTime, SitDownSpeed);
-	Camera->SetRelativeLocation(
-			FVector(Camera->GetRelativeLocation().X,
-				Camera->GetRelativeLocation().Y,
-				NewHeight));
+	GetCapsuleComponent()->SetCapsuleHalfHeight(NewHeight);
 }
 
 void ASTLTPlayerCharacter::SetRun()
@@ -222,6 +221,9 @@ void ASTLTPlayerCharacter::SetRun()
 	bCanRun = GetVelocity().Size2D() > 0.f;
     if (!bCanRun)
     {
-        SetMovementType(EMovementType::WALK);
+        if(CameraTargetHeightOffset < 88.f)
+        	SetMovementType(EMovementType::SIT);
+    	if(CameraTargetHeightOffset >= 88.f)
+    		SetMovementType(EMovementType::WALK);
     }
 }

@@ -20,23 +20,29 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	FTransform BodyTransform;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	float Damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	float Distance;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
+	uint8 CurrentAmmo;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
 	uint8 MaxAmmo;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
 	uint8 SubAmmo;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
 	uint8 SubMaxAmmo;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-	uint8 CurrentAmmo;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
 	float FireSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
 	float ReloadSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
