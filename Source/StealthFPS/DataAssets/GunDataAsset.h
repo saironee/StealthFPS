@@ -26,6 +26,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	uint8 SubAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	uint8 SubMaxAmmo;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	uint8 CurrentAmmo;

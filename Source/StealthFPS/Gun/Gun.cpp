@@ -95,6 +95,8 @@ void AGun::RefreshBody()
 	{
 		FatherCharacter->GetMesh()->SetAnimInstanceClass(Mother->AnimBlueprint);
 	}
+
+	Mother->CurrentAmmo = Mother->MaxAmmo;
 }
 
 void AGun::FireEnd()
@@ -142,16 +144,24 @@ void AGun::OnReload(const FInputActionValue& Value)
 
 void AGun::Reload()
 {
-	if(Mother->CurrentAmmo >= Mother->MaxAmmo)
-		return;
-	
-	if(Mother->CurrentAmmo + Mother->SubAmmo <= Mother->MaxAmmo)
+	if (Mother->CurrentAmmo >= Mother->MaxAmmo || Mother->SubAmmo <= 0)
 	{
-		Mother->CurrentAmmo += Mother->SubAmmo;
-		Mother->SubAmmo = 0;
-	}else
-		Mother->CurrentAmmo = Mother->MaxAmmo;
+		if(FatherCharacter = Cast<ASTLTPlayerCharacter>(GetOwner()))
+		{
+			FatherCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
+		}
+		return;
+	}
+	
+	uint8 AmmoNeeded = Mother->MaxAmmo - Mother->CurrentAmmo;
+	
+	uint8 AmmoToReload = FMath::Min(AmmoNeeded, Mother->SubAmmo);
+
+	// 탄약 갱신
+	Mother->CurrentAmmo += AmmoToReload;
+	Mother->SubAmmo -= AmmoToReload;
 }
+
 
 void AGun::EndReload()
 {
