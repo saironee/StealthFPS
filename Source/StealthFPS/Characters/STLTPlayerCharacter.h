@@ -48,6 +48,10 @@ protected:
 
 	void InitializeMovementMap();
 	void SetCamera(float DeltaTime);
+	void SetRun();
+
+protected:
+	uint8 bCanRun : 1;
 	
 public:	
 	void SetMovementType(EMovementType Type);

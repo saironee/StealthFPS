@@ -11,11 +11,15 @@
 
 #include "Interface/IReloadInterface.h"
 #include "Interface/STLTFireEndInterface.h"
+#include "Interface/STLTEndReloadInterface.h"
 
 #include "Gun.generated.h"
 
 UCLASS()
-class STEALTHFPS_API AGun : public AActor, public IIReloadInterface, public ISTLTFireEndInterface
+class STEALTHFPS_API AGun : public AActor,
+public IIReloadInterface,
+public ISTLTFireEndInterface,
+public ISTLTEndReloadInterface
 {
 	GENERATED_BODY()
 	
@@ -55,7 +59,9 @@ protected:
 protected:
 	virtual void FireEnd() override;
 	void Fire(const FInputActionValue& Value);
+	void OnReload(const FInputActionValue& Value);
 	virtual void Reload() override;
+	virtual void EndReload() override;
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<class UInputMappingContext> IMCGun;
@@ -63,10 +69,25 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<class UInputAction> IAFire;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<class UInputAction> IAReload;
+
+//Fire
+protected:	
+	FTimerHandle FireSpeedHandle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Fire")
+	float FireStartPosition = 0.f;
+	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
 	uint8 bIsFire : 1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
 	uint8 bIsReload : 1;
+
+//Reload
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
+	uint8 bCanReload : 1 = true;
 };

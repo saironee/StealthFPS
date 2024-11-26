@@ -30,7 +30,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	uint8 CurrentAmmo;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TSubclassOf<class UAnimInstance> AnimBlueprint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	float FireSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	float ReloadSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<UAnimMontage> FireMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<UAnimMontage> AimFireMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<UAnimMontage> RloadMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TSubclassOf<UAnimInstance> AnimBlueprint;
 };

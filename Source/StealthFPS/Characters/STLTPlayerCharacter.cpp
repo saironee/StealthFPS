@@ -97,6 +97,7 @@ void ASTLTPlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	SetCamera(DeltaTime);
+	SetRun();
 }
 
 void ASTLTPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -145,8 +146,11 @@ void ASTLTPlayerCharacter::ReleaseAim(const FInputActionValue& Value)
 
 void ASTLTPlayerCharacter::OnRun(const FInputActionValue& Value)
 {
-	bCanAim = false;
-	SetMovementType(EMovementType::RUN);
+	if(bCanRun)
+	{
+		bCanAim = false;
+		SetMovementType(EMovementType::RUN);
+	}
 }
 
 void ASTLTPlayerCharacter::ReleaseRun(const FInputActionValue& Value)
@@ -211,4 +215,13 @@ void ASTLTPlayerCharacter::SetCamera(float DeltaTime)
 			FVector(Camera->GetRelativeLocation().X,
 				Camera->GetRelativeLocation().Y,
 				NewHeight));
+}
+
+void ASTLTPlayerCharacter::SetRun()
+{
+	bCanRun = GetVelocity().Size2D() > 0.f;
+    if (!bCanRun)
+    {
+        SetMovementType(EMovementType::WALK);
+    }
 }

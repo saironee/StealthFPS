@@ -37,6 +37,11 @@ AGun::AGun()
 		IAFireRef(TEXT("/Game/Input/InputAction/IA_Fire.IA_Fire"));
 	if(IAFireRef.Succeeded())
 		IAFire = IAFireRef.Object;
+	
+	ConstructorHelpers::FObjectFinder<UInputAction>
+		IAReloadRef(TEXT("/Game/Input/InputAction/IA_Reload.IA_Reload"));
+	if(IAReloadRef.Succeeded())
+		IAReload = IAReloadRef.Object;
 }
 
 // Called when the game starts or when spawned
@@ -77,6 +82,7 @@ void AGun::SetupPlayerInputComponent()
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent);
 	if(EnhancedInputComponent){
 		EnhancedInputComponent->BindAction(IAFire, ETriggerEvent::Triggered, this, &AGun::Fire);
+		EnhancedInputComponent->BindAction(IAReload, ETriggerEvent::Triggered, this, &AGun::OnReload);
 	}
 }
 
@@ -93,26 +99,61 @@ void AGun::RefreshBody()
 
 void AGun::FireEnd()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Finish Fire!"));
 	bIsFire = false;
 }
 
 void AGun::Fire(const FInputActionValue& Value)
 {
-	if(Mother->CurrentAmmo <= 0 || bIsFire)
+	if(Mother->CurrentAmmo <= 0)
 		return;
-	
-	bIsFire = true;
-	Mother->CurrentAmmo--;
 
-	UCameraComponent* PlayerCamera = FatherCharacter->GetCameraComponent();
+	if(!bIsFire)
+	{
+		bIsFire = true;
+		FireStartPosition = 0.f;
+		
+		Mother->CurrentAmmo--;
+
+		if(UAnimInstance* AnimInstance = Cast<UAnimInstance>(FatherCharacter->GetMesh()->GetAnimInstance()))
+		{
+			if(FatherCharacter->bCanAim)
+				AnimInstance->Montage_Play(Mother->AimFireMontage, Mother->FireSpeed);
+			else
+				AnimInstance->Montage_Play(Mother->FireMontage, Mother->FireSpeed);
+		}
+	}
+}
+
+void AGun::OnReload(const FInputActionValue& Value)
+{
+	if(Mother->CurrentAmmo >= Mother->MaxAmmo)
+		return;
+		
+	if(bCanReload)
+	{
+		bCanReload = false;
+		if(UAnimInstance* AnimInstance = Cast<UAnimInstance>(FatherCharacter->GetMesh()->GetAnimInstance()))
+		{
+			AnimInstance->Montage_Play(Mother->RloadMontage, Mother->ReloadSpeed);
+		}
+	}
 }
 
 void AGun::Reload()
 {
+	if(Mother->CurrentAmmo >= Mother->MaxAmmo)
+		return;
+	
 	if(Mother->CurrentAmmo + Mother->SubAmmo <= Mother->MaxAmmo)
 	{
 		Mother->CurrentAmmo += Mother->SubAmmo;
 		Mother->SubAmmo = 0;
 	}else
 		Mother->CurrentAmmo = Mother->MaxAmmo;
+}
+
+void AGun::EndReload()
+{
+	bCanReload = true;
 }
