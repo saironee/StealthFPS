@@ -2,19 +2,12 @@
 
 
 #include "Gun/Gun.h"
-
 #include "DataAssets/GunDataAsset.h"
-
 #include <Components/StaticMeshComponent.h>
-
-#include <InputMappingContext.h>
-#include <InputAction.h>
 #include <GameFramework/PlayerController.h>
-
 #include "Characters/STLTPlayerCharacter.h"
 #include <Components/SkeletalMeshComponent.h>
 #include "Animation/AnimInstance.h"
-
 #include "Camera/CameraComponent.h"
 #include "Mecro/STLTLivingEntity.h"
 #include "Interface/ISTLTTakeAttack.h"
@@ -28,41 +21,12 @@ AGun::AGun()
 	//Setting Gun
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	RootComponent = Body;
-
-	//Set Iuput
-	ConstructorHelpers::FObjectFinder<UInputMappingContext>
-		IMCGunRef(TEXT("/Game/Input/IMC_Gun.IMC_Gun"));
-	if(IMCGunRef.Succeeded())
-		IMCGun = IMCGunRef.Object;
-
-	ConstructorHelpers::FObjectFinder<UInputAction>
-		IAFireRef(TEXT("/Game/Input/InputAction/IA_Fire.IA_Fire"));
-	if(IAFireRef.Succeeded())
-		IAFire = IAFireRef.Object;
-	
-	ConstructorHelpers::FObjectFinder<UInputAction>
-		IAReloadRef(TEXT("/Game/Input/InputAction/IA_Reload.IA_Reload"));
-	if(IAReloadRef.Succeeded())
-		IAReload = IAReloadRef.Object;
 }
 
 // Called when the game starts or when spawned
 void AGun::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Input Mapping Context 추가
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController()))
-	{
-		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		if (Subsystem && IMCGun)
-		{
-			Subsystem->AddMappingContext(IMCGun, 1);
-		}
-	}
-
-	// 직접 호출
-	SetupPlayerInputComponent();
 }
 
 
@@ -70,22 +34,6 @@ void AGun::BeginPlay()
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-void AGun::SetupPlayerInputComponent()
-{
-	APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
-	if (!PlayerController)
-	{
-		UE_LOG(LogTemp, Error, TEXT("총기결함 총기결함!"));
-		return;
-	}
-
-	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent);
-	if(EnhancedInputComponent){
-		EnhancedInputComponent->BindAction(IAFire, ETriggerEvent::Triggered, this, &AGun::Fire);
-		EnhancedInputComponent->BindAction(IAReload, ETriggerEvent::Triggered, this, &AGun::OnReload);
-	}
 }
 
 void AGun::RefreshBody()
@@ -105,7 +53,7 @@ void AGun::FireEnd()
 	bIsFire = false;
 }
 
-void AGun::Fire(const FInputActionValue& Value)
+void AGun::OnFire()
 {
 	if(Mother->CurrentAmmo <= 0 || !bCanReload || bIsFire)
 		return;
@@ -123,7 +71,7 @@ void AGun::Fire(const FInputActionValue& Value)
 	}
 }
 
-void AGun::OnReload(const FInputActionValue& Value)
+void AGun::OnReload()
 {
 	if(Mother->CurrentAmmo >= Mother->MaxAmmo || bIsFire || Mother->SubAmmo <= 0)
 	{
@@ -189,4 +137,3 @@ void AGun::FireRay()
 		}
 	}
 }
-

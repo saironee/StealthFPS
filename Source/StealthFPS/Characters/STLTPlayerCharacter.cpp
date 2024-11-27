@@ -19,6 +19,7 @@
 #include <Components/SkeletalMeshComponent.h>
 
 #include "Components/CapsuleComponent.h"
+#include "Gun/Gun.h"
 
 ASTLTPlayerCharacter::ASTLTPlayerCharacter() :
 MyGun(nullptr)
@@ -69,6 +70,16 @@ MyGun(nullptr)
 	if(IASitRef.Succeeded())
 		IASit = IASitRef.Object;
 
+	ConstructorHelpers::FObjectFinder<UInputAction>
+	IAFireRef(TEXT("/Game/Input/InputAction/IA_Fire.IA_Fire"));
+	if(IAFireRef.Succeeded())
+		IAFire = IAFireRef.Object;
+	
+	ConstructorHelpers::FObjectFinder<UInputAction>
+		IAReloadRef(TEXT("/Game/Input/InputAction/IA_Reload.IA_Reload"));
+	if(IAReloadRef.Succeeded())
+		IAReload = IAReloadRef.Object;
+
 	InitializeMovementMap();
 }
 
@@ -115,6 +126,8 @@ void ASTLTPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(IARun, ETriggerEvent::Triggered, this, &ASTLTPlayerCharacter::OnRun);
 		EnhancedInputComponent->BindAction(IARun, ETriggerEvent::Completed, this, &ASTLTPlayerCharacter::ReleaseRun);
 		EnhancedInputComponent->BindAction(IASit, ETriggerEvent::Started, this, &ASTLTPlayerCharacter::Sit);
+		EnhancedInputComponent->BindAction(IAFire, ETriggerEvent::Triggered, this, &ASTLTPlayerCharacter::OnFire);
+		EnhancedInputComponent->BindAction(IAReload, ETriggerEvent::Triggered, this, &ASTLTPlayerCharacter::OnReload);
 	}
 }
 

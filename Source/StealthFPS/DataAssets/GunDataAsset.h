@@ -28,7 +28,7 @@ public:
 	float Distance;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
-	uint8 CurrentAmmo;
+	int32 CurrentAmmo;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
 	uint8 MaxAmmo;
@@ -37,7 +37,7 @@ public:
 	uint8 SubAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
-	uint8 SubMaxAmmo;
+	int32 SubMaxAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
 	float FireSpeed;
