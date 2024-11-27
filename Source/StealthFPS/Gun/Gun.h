@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-
-#include <EnhancedInputComponent.h>
 #include <EnhancedInputSubsystems.h>
 #include <InputActionValue.h>
-
 #include "Interface/IReloadInterface.h"
 #include "Interface/STLTFireEndInterface.h"
-
+#include "Interface/STLTEndReloadInterface.h"
 #include "Gun.generated.h"
 
 UCLASS()
-class STEALTHFPS_API AGun : public AActor, public IIReloadInterface, public ISTLTFireEndInterface
+class STEALTHFPS_API AGun : public AActor,
+public IIReloadInterface,
+public ISTLTFireEndInterface,
+public ISTLTEndReloadInterface
 {
 	GENERATED_BODY()
 	
@@ -30,8 +30,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	void SetupPlayerInputComponent();
 
 //Body
 protected:
@@ -51,22 +49,27 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mother)
 	TObjectPtr<class ASTLTPlayerCharacter> FatherCharacter;
 
-//Input
+//Reload
 protected:
-	virtual void FireEnd() override;
-	void Fire(const FInputActionValue& Value);
 	virtual void Reload() override;
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<class UInputMappingContext> IMCGun;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<class UInputAction> IAFire;
+	virtual void EndReload() override;
 
+
+//Fire
+protected:	
+	virtual void FireEnd() override;
+	void FireRay();
+
+//Input	
 public:
+	void OnFire();
+	void OnReload();
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
-	uint8 bIsFire : 1;
+	uint8 bIsFire : 1 = false;
 
+//Reload
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
-	uint8 bIsReload : 1;
+	uint8 bCanReload : 1 = true;
 };

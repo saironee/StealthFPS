@@ -2,20 +2,15 @@
 
 
 #include "Gun/Gun.h"
-
 #include "DataAssets/GunDataAsset.h"
-
 #include <Components/StaticMeshComponent.h>
-
-#include <InputMappingContext.h>
-#include <InputAction.h>
 #include <GameFramework/PlayerController.h>
-
 #include "Characters/STLTPlayerCharacter.h"
 #include <Components/SkeletalMeshComponent.h>
 #include "Animation/AnimInstance.h"
-
 #include "Camera/CameraComponent.h"
+#include "Mecro/STLTLivingEntity.h"
+#include "Interface/ISTLTTakeAttack.h"
 
 // Sets default values
 AGun::AGun()
@@ -26,36 +21,12 @@ AGun::AGun()
 	//Setting Gun
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	RootComponent = Body;
-
-	//Set Iuput
-	ConstructorHelpers::FObjectFinder<UInputMappingContext>
-		IMCGunRef(TEXT("/Game/Input/IMC_Gun.IMC_Gun"));
-	if(IMCGunRef.Succeeded())
-		IMCGun = IMCGunRef.Object;
-
-	ConstructorHelpers::FObjectFinder<UInputAction>
-		IAFireRef(TEXT("/Game/Input/InputAction/IA_Fire.IA_Fire"));
-	if(IAFireRef.Succeeded())
-		IAFire = IAFireRef.Object;
 }
 
 // Called when the game starts or when spawned
 void AGun::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Input Mapping Context 추가
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController()))
-	{
-		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		if (Subsystem && IMCGun)
-		{
-			Subsystem->AddMappingContext(IMCGun, 1);
-		}
-	}
-
-	// 직접 호출
-	SetupPlayerInputComponent();
 }
 
 
@@ -63,21 +34,6 @@ void AGun::BeginPlay()
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-void AGun::SetupPlayerInputComponent()
-{
-	APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
-	if (!PlayerController)
-	{
-		UE_LOG(LogTemp, Error, TEXT("총기결함 총기결함!"));
-		return;
-	}
-
-	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent);
-	if(EnhancedInputComponent){
-		EnhancedInputComponent->BindAction(IAFire, ETriggerEvent::Triggered, this, &AGun::Fire);
-	}
 }
 
 void AGun::RefreshBody()
@@ -93,26 +49,91 @@ void AGun::RefreshBody()
 
 void AGun::FireEnd()
 {
+	//UE_LOG(LogTemp, Warning, TEXT("Finish Fire!"));
 	bIsFire = false;
 }
 
-void AGun::Fire(const FInputActionValue& Value)
+void AGun::OnFire()
 {
-	if(Mother->CurrentAmmo <= 0 || bIsFire)
+	if(Mother->CurrentAmmo <= 0 || !bCanReload || bIsFire)
 		return;
-	
+
 	bIsFire = true;
+	FireRay();
 	Mother->CurrentAmmo--;
 
-	UCameraComponent* PlayerCamera = FatherCharacter->GetCameraComponent();
+	if(UAnimInstance* AnimInstance = Cast<UAnimInstance>(FatherCharacter->GetMesh()->GetAnimInstance()))
+	{
+		if(FatherCharacter->bCanAim)
+			AnimInstance->Montage_Play(Mother->AimFireMontage, Mother->FireSpeed);
+		else
+			AnimInstance->Montage_Play(Mother->FireMontage, Mother->FireSpeed);
+	}
+}
+
+void AGun::OnReload()
+{
+	if(Mother->CurrentAmmo >= Mother->MaxAmmo || bIsFire || Mother->SubAmmo <= 0)
+	{
+		FatherCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0.2f);
+		bCanReload = true;
+		return;
+	}
+		
+	
+	if(bCanReload)
+	{
+		bCanReload = false;
+		if(UAnimInstance* AnimInstance = Cast<UAnimInstance>(FatherCharacter->GetMesh()->GetAnimInstance()))
+		{
+			AnimInstance->Montage_Play(Mother->RloadMontage, Mother->ReloadSpeed);
+		}
+	}
 }
 
 void AGun::Reload()
 {
-	if(Mother->CurrentAmmo + Mother->SubAmmo <= Mother->MaxAmmo)
+	uint8 AmmoNeeded = Mother->MaxAmmo - Mother->CurrentAmmo;
+	uint8 AmmoToReload = FMath::Min(AmmoNeeded, Mother->SubAmmo);
+	if(Mother->SubAmmo - AmmoToReload > Mother->SubMaxAmmo)
 	{
-		Mother->CurrentAmmo += Mother->SubAmmo;
 		Mother->SubAmmo = 0;
-	}else
-		Mother->CurrentAmmo = Mother->MaxAmmo;
+	}
+	// 탄약 갱신
+	Mother->CurrentAmmo += AmmoToReload;
+	Mother->SubAmmo -= AmmoToReload;
+}
+
+
+void AGun::EndReload()
+{
+	bCanReload = true;
+}
+
+void AGun::FireRay()
+{
+	FHitResult HitResult;
+
+	// 레이 시작 지점
+	FVector Start = FatherCharacter->GetCameraComponent()->GetComponentLocation();
+    
+	// 레이 끝 지점
+	FVector End = Start + (FatherCharacter->GetActorForwardVector() * Mother->Distance);
+
+	// 레이 트레이스 실행
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollsionLivingEntity))
+	{
+		// 충돌한 액터의 이름 출력
+		UE_LOG(LogTemp, Display, TEXT("%s"), *HitResult.GetActor()->GetName());
+
+		// 공격 처리
+		if (IISTLTTakeAttack* TakeAttack = Cast<IISTLTTakeAttack>(HitResult.GetActor()))
+		{
+			TakeAttack->TakeAttack(EAttackType::BULLET, HitResult.GetActor(), Mother->Damage);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Fail Cast TakeAttack"));
+		}
+	}
 }

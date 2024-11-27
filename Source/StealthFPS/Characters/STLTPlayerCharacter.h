@@ -8,6 +8,7 @@
 #include "InputActionValue.h"
 
 #include "Enums/EMovementType.h"
+#include "Gun/Gun.h"
 
 #include "STLTPlayerCharacter.generated.h"
 
@@ -45,9 +46,15 @@ protected:
 	void OnRun(const FInputActionValue& Value);
 	void ReleaseRun(const FInputActionValue& Value);
 	void Sit(const FInputActionValue& Value);
+	void OnFire(const FInputActionValue& Value) { if(MyGun){ MyGun->OnFire(); } }
+	void OnReload(const FInputActionValue& Value){ if(MyGun){  MyGun->OnReload(); } }
 
 	void InitializeMovementMap();
 	void SetCamera(float DeltaTime);
+	void SetRun();
+
+protected:
+	uint8 bCanRun : 1;
 	
 public:	
 	void SetMovementType(EMovementType Type);
@@ -81,6 +88,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<class UInputAction> IASit;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<class UInputAction> IAFire;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<class UInputAction> IAReload;
 
 protected:
 	TMap<EMovementType, TObjectPtr<class UMovementDataAsset>> MovementMap;

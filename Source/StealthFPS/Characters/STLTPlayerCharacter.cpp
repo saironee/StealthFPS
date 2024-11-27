@@ -18,6 +18,9 @@
 
 #include <Components/SkeletalMeshComponent.h>
 
+#include "Components/CapsuleComponent.h"
+#include "Gun/Gun.h"
+
 ASTLTPlayerCharacter::ASTLTPlayerCharacter() :
 MyGun(nullptr)
 {
@@ -67,6 +70,16 @@ MyGun(nullptr)
 	if(IASitRef.Succeeded())
 		IASit = IASitRef.Object;
 
+	ConstructorHelpers::FObjectFinder<UInputAction>
+	IAFireRef(TEXT("/Game/Input/InputAction/IA_Fire.IA_Fire"));
+	if(IAFireRef.Succeeded())
+		IAFire = IAFireRef.Object;
+	
+	ConstructorHelpers::FObjectFinder<UInputAction>
+		IAReloadRef(TEXT("/Game/Input/InputAction/IA_Reload.IA_Reload"));
+	if(IAReloadRef.Succeeded())
+		IAReload = IAReloadRef.Object;
+
 	InitializeMovementMap();
 }
 
@@ -97,6 +110,7 @@ void ASTLTPlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	SetCamera(DeltaTime);
+	SetRun();
 }
 
 void ASTLTPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -112,6 +126,8 @@ void ASTLTPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(IARun, ETriggerEvent::Triggered, this, &ASTLTPlayerCharacter::OnRun);
 		EnhancedInputComponent->BindAction(IARun, ETriggerEvent::Completed, this, &ASTLTPlayerCharacter::ReleaseRun);
 		EnhancedInputComponent->BindAction(IASit, ETriggerEvent::Started, this, &ASTLTPlayerCharacter::Sit);
+		EnhancedInputComponent->BindAction(IAFire, ETriggerEvent::Triggered, this, &ASTLTPlayerCharacter::OnFire);
+		EnhancedInputComponent->BindAction(IAReload, ETriggerEvent::Triggered, this, &ASTLTPlayerCharacter::OnReload);
 	}
 }
 
@@ -145,8 +161,11 @@ void ASTLTPlayerCharacter::ReleaseAim(const FInputActionValue& Value)
 
 void ASTLTPlayerCharacter::OnRun(const FInputActionValue& Value)
 {
-	bCanAim = false;
-	SetMovementType(EMovementType::RUN);
+	if(bCanRun)
+	{
+		bCanAim = false;
+		SetMovementType(EMovementType::RUN);
+	}
 }
 
 void ASTLTPlayerCharacter::ReleaseRun(const FInputActionValue& Value)
@@ -205,10 +224,19 @@ void ASTLTPlayerCharacter::SetCamera(float DeltaTime)
 	float NewFOV = FMath::FInterpTo(CurrentFOV, CameraTargetOffset, DeltaTime, ZoomSpeed);
 	Camera->SetFieldOfView(NewFOV);
 
-	float CurrentHeight = Camera->GetRelativeLocation().Z;
+	float CurrentHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 	float NewHeight = FMath::FInterpTo(CurrentHeight, CameraTargetHeightOffset, DeltaTime, SitDownSpeed);
-	Camera->SetRelativeLocation(
-			FVector(Camera->GetRelativeLocation().X,
-				Camera->GetRelativeLocation().Y,
-				NewHeight));
+	GetCapsuleComponent()->SetCapsuleHalfHeight(NewHeight);
+}
+
+void ASTLTPlayerCharacter::SetRun()
+{
+	bCanRun = GetVelocity().Size2D() > 0.f;
+    if (!bCanRun)
+    {
+        if(CameraTargetHeightOffset < 88.f)
+        	SetMovementType(EMovementType::SIT);
+    	if(CameraTargetHeightOffset >= 88.f)
+    		SetMovementType(EMovementType::WALK);
+    }
 }
