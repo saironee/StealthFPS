@@ -42,9 +42,15 @@ protected:
 protected:
 	UFUNCTION(Blueprintable)
 	void SetMother(class UGunDataAsset* newMom) { Mother = newMom;};
-	
+
+	UFUNCTION(Blueprintable)
+	void SetBrother(class USTLTInventoryDataAsset* newBro) { Brother = newBro; };
+		
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mother)
 	TObjectPtr<class UGunDataAsset> Mother;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mother)
+	TObjectPtr<class USTLTInventoryDataAsset> Brother;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mother)
 	TObjectPtr<class ASTLTPlayerCharacter> FatherCharacter;
@@ -59,6 +65,10 @@ protected:
 protected:	
 	virtual void FireEnd() override;
 	void FireRay();
+
+protected:
+	UPROPERTY(VIsibleAnywhere, BlueprintReadOnly, Category = Fire)
+	int32 CurrentAmmo;
 
 //Input	
 public:

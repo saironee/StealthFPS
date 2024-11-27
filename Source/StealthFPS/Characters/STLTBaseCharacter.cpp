@@ -33,6 +33,7 @@ void ASTLTBaseCharacter::TakeAttack(EAttackType DamageType, AActor* DamageCauser
 
 void ASTLTBaseCharacter::Die()
 {
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	bIsDead = true;
 }
 

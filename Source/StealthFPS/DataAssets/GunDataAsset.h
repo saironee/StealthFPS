@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Enums/EGunType.h"
 #include "GunDataAsset.generated.h"
 
 /**
@@ -15,6 +16,9 @@ class STEALTHFPS_API UGunDataAsset : public UDataAsset
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
+	EGunType Type;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
 	TObjectPtr<class UStaticMesh> BodyMesh;
 
@@ -28,16 +32,7 @@ public:
 	float Distance;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
-	int32 CurrentAmmo;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
 	uint8 MaxAmmo;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
-	uint8 SubAmmo;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
-	int32 SubMaxAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
 	float FireSpeed;

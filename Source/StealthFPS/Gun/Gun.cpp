@@ -9,6 +9,7 @@
 #include <Components/SkeletalMeshComponent.h>
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
+#include "DataAssets/STLTInventoryDataAsset.h"
 #include "Mecro/STLTLivingEntity.h"
 #include "Interface/ISTLTTakeAttack.h"
 
@@ -55,12 +56,12 @@ void AGun::FireEnd()
 
 void AGun::OnFire()
 {
-	if(Mother->CurrentAmmo <= 0 || !bCanReload || bIsFire)
+	if(CurrentAmmo <= 0 || !bCanReload || bIsFire)
 		return;
 
 	bIsFire = true;
 	FireRay();
-	Mother->CurrentAmmo--;
+	CurrentAmmo--;
 
 	if(UAnimInstance* AnimInstance = Cast<UAnimInstance>(FatherCharacter->GetMesh()->GetAnimInstance()))
 	{
@@ -73,7 +74,7 @@ void AGun::OnFire()
 
 void AGun::OnReload()
 {
-	if(Mother->CurrentAmmo >= Mother->MaxAmmo || bIsFire || Mother->SubAmmo <= 0)
+	if(CurrentAmmo >= Mother->MaxAmmo || bIsFire || Brother->SubAmmo <= 0)
 	{
 		FatherCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0.2f);
 		bCanReload = true;
@@ -93,15 +94,15 @@ void AGun::OnReload()
 
 void AGun::Reload()
 {
-	uint8 AmmoNeeded = Mother->MaxAmmo - Mother->CurrentAmmo;
-	uint8 AmmoToReload = FMath::Min(AmmoNeeded, Mother->SubAmmo);
-	if(Mother->SubAmmo - AmmoToReload > Mother->SubMaxAmmo)
+	int32 AmmoNeeded = Mother->MaxAmmo -CurrentAmmo;
+	int32 AmmoToReload = FMath::Min(AmmoNeeded, Brother->SubAmmo);
+	if(Brother->SubAmmo - AmmoToReload > Brother->SubMaxAmmo)
 	{
-		Mother->SubAmmo = 0;
+		Brother->SubAmmo = 0;
 	}
 	// 탄약 갱신
-	Mother->CurrentAmmo += AmmoToReload;
-	Mother->SubAmmo -= AmmoToReload;
+	CurrentAmmo += AmmoToReload;
+	Brother->SubAmmo -= AmmoToReload;
 }
 
 
