@@ -32,6 +32,7 @@ void USTLTPlayerAnimInstance::NativeUpdateAnimation(float DeltaTime)
 			bIsMove = false;
 
 		bIsZoom = PlayerCharacter->bCanAim;
+		bIsTakedown = PlayerCharacter->bIsTakedwon;
 
 		if(PlayerCharacter->MyGun != nullptr)
 		{

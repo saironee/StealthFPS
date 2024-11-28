@@ -80,6 +80,17 @@ MyGun(nullptr)
 	if(IAReloadRef.Succeeded())
 		IAReload = IAReloadRef.Object;
 
+	ConstructorHelpers::FObjectFinder<UInputAction>
+		IATakedownRef(TEXT("/Game/Input/InputAction/IA_TakeDown.IA_TakeDown"));
+	if(IATakedownRef.Succeeded())
+		IATakedown = IATakedownRef.Object;
+
+	//Set Animation
+	ConstructorHelpers::FClassFinder<UAnimInstance>
+		AnimInstanceRef(TEXT("/Game/Animation/Player/ABP_PlayerHand.ABP_PlayerHand_C"));
+	if(AnimInstanceRef.Succeeded())
+		AnimInstance = AnimInstanceRef.Class;
+
 	InitializeMovementMap();
 }
 
@@ -128,6 +139,8 @@ void ASTLTPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(IASit, ETriggerEvent::Started, this, &ASTLTPlayerCharacter::Sit);
 		EnhancedInputComponent->BindAction(IAFire, ETriggerEvent::Triggered, this, &ASTLTPlayerCharacter::OnFire);
 		EnhancedInputComponent->BindAction(IAReload, ETriggerEvent::Triggered, this, &ASTLTPlayerCharacter::OnReload);
+		EnhancedInputComponent->BindAction(IATakedown, ETriggerEvent::Triggered, this, &ASTLTPlayerCharacter::OnTakeDown);
+		EnhancedInputComponent->BindAction(IATakedown, ETriggerEvent::Completed, this, &ASTLTPlayerCharacter::ReleaseTakeDown);
 	}
 }
 
@@ -161,7 +174,7 @@ void ASTLTPlayerCharacter::ReleaseAim(const FInputActionValue& Value)
 
 void ASTLTPlayerCharacter::OnRun(const FInputActionValue& Value)
 {
-	if(bCanRun)
+	if(bCanRun || bIsTakedwon)
 	{
 		bCanAim = false;
 		SetMovementType(EMovementType::RUN);
@@ -181,11 +194,32 @@ void ASTLTPlayerCharacter::Sit(const FInputActionValue& Value)
 		SetMovementType(EMovementType::SIT);
 }
 
+void ASTLTPlayerCharacter::OnTakeDown(const FInputActionValue& Value)
+{
+	bIsTakedwon = true;
+	if(MyGun)
+	{
+		MyGun->SetActorHiddenInGame(true);
+	}
+	GetMesh()->SetAnimInstanceClass(AnimInstance);
+}
+
+void ASTLTPlayerCharacter::ReleaseTakeDown(const FInputActionValue& Value)
+{
+	bIsTakedwon = false;
+	
+	if(MyGun)
+	{
+		MyGun->SetHidden(false);
+		MyGun->RefreshBody();
+	}
+}
+
 void ASTLTPlayerCharacter::InitializeMovementMap()
 {
 	MovementMap.Empty();
 	
-	for (int32 i = 0; i < static_cast<int32>(EMovementType::DIE) + 1; ++i)
+	for (int32 i = 0; i < static_cast<int32>(EMovementType::RUN) + 1; ++i)
 	{
 		EMovementType MovementType = static_cast<EMovementType>(i);
 		
