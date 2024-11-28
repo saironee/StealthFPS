@@ -11,7 +11,7 @@ public class StealthFPS : ModuleRules
 		PublicIncludePaths.AddRange(new string[] { "StealthFPS" });
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", 
-			"CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG" });
+			"CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Slate", "SlateCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
