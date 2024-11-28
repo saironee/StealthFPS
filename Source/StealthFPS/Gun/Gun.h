@@ -32,7 +32,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 //Body
-protected:
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Body)
 	TObjectPtr<class UStaticMeshComponent> Body;
 

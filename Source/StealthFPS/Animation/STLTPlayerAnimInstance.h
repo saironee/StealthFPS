@@ -40,4 +40,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	uint8 bIsFire : 1;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	uint8 bIsTakedown : 1;
 };

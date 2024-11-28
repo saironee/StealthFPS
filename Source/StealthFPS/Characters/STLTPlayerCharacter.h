@@ -46,9 +46,11 @@ protected:
 	void OnRun(const FInputActionValue& Value);
 	void ReleaseRun(const FInputActionValue& Value);
 	void Sit(const FInputActionValue& Value);
-	void OnFire(const FInputActionValue& Value) { if(MyGun){ MyGun->OnFire(); } }
-	void OnReload(const FInputActionValue& Value){ if(MyGun){  MyGun->OnReload(); } }
-
+	void OnFire(const FInputActionValue& Value) { if(MyGun || !bIsTakedwon){ MyGun->OnFire(); } }
+	void OnReload(const FInputActionValue& Value){ if(MyGun || !bIsTakedwon){  MyGun->OnReload(); } }
+	void OnTakeDown(const FInputActionValue& Value);
+	void ReleaseTakeDown(const FInputActionValue& Value);
+	
 	void InitializeMovementMap();
 	void SetCamera(float DeltaTime);
 	void SetRun();
@@ -69,6 +71,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	class UCameraComponent* GetCameraComponent() { return Camera; };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Takedwon")
+	uint8 bIsTakedwon : 1;
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
@@ -95,6 +100,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<class UInputAction> IAReload;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<class UInputAction> IATakedown;
+
 protected:
 	TMap<EMovementType, TObjectPtr<class UMovementDataAsset>> MovementMap;
 	
@@ -107,4 +115,8 @@ protected:
 	float CameraTargetOffset;
 	float CameraTargetHeightOffset;
 	EMovementType CurrentMovementType;
+
+//Animation
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Aniamtion)
+	TSubclassOf<UAnimInstance> AnimInstance;
 };
