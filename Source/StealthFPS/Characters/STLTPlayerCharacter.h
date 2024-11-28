@@ -111,6 +111,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Zoom")
 	float SitDownSpeed = 20.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Takedown")
+	float TakedownLength = 100.f;
 	
 	float CameraTargetOffset;
 	float CameraTargetHeightOffset;
