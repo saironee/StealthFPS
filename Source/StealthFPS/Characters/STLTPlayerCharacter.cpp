@@ -2,24 +2,21 @@
 
 
 #include "Characters/STLTPlayerCharacter.h"
-
 #include <Components/SkeletalMeshComponent.h>
-
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
-
 #include <InputMappingContext.h>
 #include <InputAction.h>
 #include <EnhancedInputComponent.h>
 #include <EnhancedInputSubsystems.h>
-
 #include "DataAssets/MovementDataAsset.h"
 #include <GameFramework/CharacterMovementComponent.h>
-
+#include "Mecro/STLTLivingEntity.h"
 #include <Components/SkeletalMeshComponent.h>
-
 #include "Components/CapsuleComponent.h"
 #include "Gun/Gun.h"
+#include "Characters/STLTEmemyCharacter.h"
+#include "Enums/EAttackType.h"
 
 ASTLTPlayerCharacter::ASTLTPlayerCharacter() :
 MyGun(nullptr)
@@ -207,9 +204,14 @@ void ASTLTPlayerCharacter::OnTakeDown(const FInputActionValue& Value)
 void ASTLTPlayerCharacter::ReleaseTakeDown(const FInputActionValue& Value)
 {
 	bIsTakedwon = false;
-	
-	if(MyGun)
+
+	FHitResult HitResult;
+	if(GetWorld()->LineTraceSingleByChannel(HitResult, GetActorForwardVector(), GetActorForwardVector() * TakedownLength, ECollsionLivingEntity))
 	{
+		if(ASTLTEmemyCharacter* Enemy = Cast<ASTLTEmemyCharacter>(HitResult.GetActor())){
+			//암살 애니메이션 재생
+		}
+	} else if(MyGun) {
 		MyGun->SetHidden(false);
 		MyGun->RefreshBody();
 	}

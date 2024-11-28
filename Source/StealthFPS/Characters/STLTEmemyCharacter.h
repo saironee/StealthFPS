@@ -13,5 +13,10 @@ UCLASS()
 class STEALTHFPS_API ASTLTEmemyCharacter : public ASTLTBaseCharacter
 {
 	GENERATED_BODY()
-	
+
+public:
+
+
+public:
+	void Stun();
 };
