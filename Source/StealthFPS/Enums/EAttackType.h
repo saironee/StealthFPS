@@ -7,5 +7,6 @@ enum class EAttackType : uint8
 	BULLET 			UMETA(DisplayName = "Bullet"),
 	KNOCKBACK 		UMETA(DisplayName = "Knockback"),
 	STUN			UMETA(DisplayName = "Stun"),
+	TAKEDOWN 		UMETA(DisplayName = "Takedown"),
 	ONEKILL			UMETA(DisplayName = "OneKill"),
 };

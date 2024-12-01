@@ -19,4 +19,7 @@ public:
 
 public:
 	void Stun();
+
+protected:
+	virtual void Takedown(AActor* DamageCauser) override;
 };

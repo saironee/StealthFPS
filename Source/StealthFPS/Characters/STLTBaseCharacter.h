@@ -22,13 +22,24 @@ public:
 public:
 	virtual void BeginPlay() override;
 	
-//Dead or Alive
+//Dead or Alive And TakeAttack
 protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void TakeAttack(EAttackType DamageType, AActor* DamageCauser, float Damage) override;
+
+
+/*
+ *BulletHit,
+ *Takedown 과 같은 맞았을 때 반응 구현은 자식이 직접하도록!
+ */
+	UFUNCTION(BlueprintCallable)
+	void BulletHit() {}
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void Takedown(AActor* DamageCauser) {}
 	
 	UFUNCTION(BLueprintCallable, Category = "Health")
-	void Die();
+	virtual void Die();
 		
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")

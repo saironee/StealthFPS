@@ -35,6 +35,11 @@ void AGun::BeginPlay()
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (FatherCharacter == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("FatherCharacter가 null입니다!"));
+	}
 }
 
 void AGun::RefreshBody()
@@ -42,10 +47,6 @@ void AGun::RefreshBody()
 	if(Mother != nullptr)
 		Body->SetStaticMesh(Mother->BodyMesh);
 	Body->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	if(FatherCharacter = Cast<ASTLTPlayerCharacter>(GetOwner()))
-	{
-		FatherCharacter->GetMesh()->SetAnimInstanceClass(Mother->AnimBlueprint);
-	}
 }
 
 void AGun::FireEnd()

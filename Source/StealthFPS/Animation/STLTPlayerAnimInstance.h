@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Enums/EGunType.h"
 
 #include "Enums/EMovementType.h"
 
@@ -43,4 +44,10 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	uint8 bIsTakedown : 1;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	uint8 bIsChoke : 1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	EGunType CurrentGunType;
 };

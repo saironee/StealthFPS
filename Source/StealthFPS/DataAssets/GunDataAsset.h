@@ -48,7 +48,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<UAnimMontage> RloadMontage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TSubclassOf<UAnimInstance> AnimBlueprint;
 };

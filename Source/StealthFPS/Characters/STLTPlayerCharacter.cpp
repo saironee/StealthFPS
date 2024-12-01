@@ -3,7 +3,6 @@
 
 #include "Characters/STLTPlayerCharacter.h"
 #include <Components/SkeletalMeshComponent.h>
-#include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
 #include <InputMappingContext.h>
 #include <InputAction.h>
@@ -12,11 +11,11 @@
 #include "DataAssets/MovementDataAsset.h"
 #include <GameFramework/CharacterMovementComponent.h>
 #include "Mecro/STLTLivingEntity.h"
-#include <Components/SkeletalMeshComponent.h>
 #include "Components/CapsuleComponent.h"
 #include "Gun/Gun.h"
 #include "Characters/STLTEmemyCharacter.h"
 #include "Enums/EAttackType.h"
+#include "DrawDebugHelpers.h"
 
 ASTLTPlayerCharacter::ASTLTPlayerCharacter() :
 MyGun(nullptr)
@@ -26,15 +25,19 @@ MyGun(nullptr)
 	Camera->SetupAttachment(RootComponent);
 
 	Camera->bUsePawnControlRotation = true;
+
+	//Scene Setcion
+	CreateDefaultSubobject<USceneComponent>(TEXT("TakedownScene"));
+	TakedownScene->SetupAttachment(RootComponent);
 	
 	//Set Body
-	ConstructorHelpers::FObjectFinder<USkeletalMesh>
+	 const ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		BodyRef(TEXT("/Game/Arms/PlayerArm/PlayerArm.PlayerArm"));
-	if(BodyRef.Succeeded())
-		GetMesh()->SetSkeletalMesh(BodyRef.Object);
+	 if(BodyRef.Succeeded())
+	 	GetMesh()->SetSkeletalMesh(BodyRef.Object);
 
-	GetMesh()->SetupAttachment(Camera);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	 GetMesh()->SetupAttachment(Camera);
+	 GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//Set Input
 	ConstructorHelpers::FObjectFinder<UInputMappingContext>
@@ -81,12 +84,6 @@ MyGun(nullptr)
 		IATakedownRef(TEXT("/Game/Input/InputAction/IA_TakeDown.IA_TakeDown"));
 	if(IATakedownRef.Succeeded())
 		IATakedown = IATakedownRef.Object;
-
-	//Set Animation
-	ConstructorHelpers::FClassFinder<UAnimInstance>
-		AnimInstanceRef(TEXT("/Game/Animation/Player/ABP_PlayerHand.ABP_PlayerHand_C"));
-	if(AnimInstanceRef.Succeeded())
-		AnimInstance = AnimInstanceRef.Class;
 
 	InitializeMovementMap();
 }
@@ -198,24 +195,61 @@ void ASTLTPlayerCharacter::OnTakeDown(const FInputActionValue& Value)
 	{
 		MyGun->SetActorHiddenInGame(true);
 	}
-	GetMesh()->SetAnimInstanceClass(AnimInstance);
+	CurrentGunType = EGunType::HAND;
 }
 
 void ASTLTPlayerCharacter::ReleaseTakeDown(const FInputActionValue& Value)
 {
-	bIsTakedwon = false;
-
+	FVector Start = GetActorLocation();
+	FVector End = Start + (GetCameraComponent()->GetForwardVector() * TakedownLength);
+	
 	FHitResult HitResult;
-	if(GetWorld()->LineTraceSingleByChannel(HitResult, GetActorForwardVector(), GetActorForwardVector() * TakedownLength, ECollsionLivingEntity))
+	
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		Start,
+		End,
+		ECollsionLivingEntity
+	);
+
+	// DrawDebugLine
+	DrawDebugLine(
+		GetWorld(),
+		Start,
+		End,
+		bHit ? FColor::Green : FColor::Red, // 충돌 여부에 따라 색상 변경
+		false,
+		2.0f, // 지속 시간
+		0,
+		2.0f  // 두께
+	);
+
+	// Hit Enemy
+	if (bHit)
 	{
-		if(ASTLTEmemyCharacter* Enemy = Cast<ASTLTEmemyCharacter>(HitResult.GetActor())){
-			//암살 애니메이션 재생
+		if (ASTLTEmemyCharacter* Enemy = Cast<ASTLTEmemyCharacter>(HitResult.GetActor()))
+		{
+			bIsChoke = true;
+			if(IISTLTTakeAttack* TakeEnemy = Cast<IISTLTTakeAttack>(Enemy))
+			{
+				TakeEnemy->TakeAttack(EAttackType::TAKEDOWN, this, 0.f);
+			}
 		}
-	} else if(MyGun) {
-		MyGun->SetHidden(false);
-		MyGun->RefreshBody();
+	}
+	else
+	{
+		bIsTakedwon = false;
+		bIsChoke = false;
+		
+		if (MyGun && !bIsChoke)
+		{
+			MyGun->SetHidden(false);
+			MyGun->RefreshBody();
+			CurrentGunType = MyGun->GetGunType();
+		}
 	}
 }
+
 
 void ASTLTPlayerCharacter::InitializeMovementMap()
 {

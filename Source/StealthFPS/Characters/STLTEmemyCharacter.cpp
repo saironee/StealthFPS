@@ -3,3 +3,9 @@
 
 #include "Characters/STLTEmemyCharacter.h"
 
+void ASTLTEmemyCharacter::Takedown(AActor* DamageCauser)
+{
+	Super::Takedown(DamageCauser);
+
+	
+}

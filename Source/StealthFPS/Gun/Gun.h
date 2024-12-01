@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include <EnhancedInputSubsystems.h>
 #include <InputActionValue.h>
+
+#include "DataAssets/GunDataAsset.h"
+#include "Enums/EGunType.h"
 #include "Interface/IReloadInterface.h"
 #include "Interface/STLTFireEndInterface.h"
 #include "Interface/STLTEndReloadInterface.h"
@@ -52,7 +55,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mother)
 	TObjectPtr<class USTLTInventoryDataAsset> Brother;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mother)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mother)
 	TObjectPtr<class ASTLTPlayerCharacter> FatherCharacter;
 
 //Reload
@@ -78,6 +81,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
 	uint8 bIsFire : 1 = false;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	EGunType GetGunType() { return Mother->Type; };
 //Reload
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")

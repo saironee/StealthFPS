@@ -25,10 +25,21 @@ void ASTLTBaseCharacter::BeginPlay()
 void ASTLTBaseCharacter::TakeAttack(EAttackType DamageType, AActor* DamageCauser, float Damage)
 {
 	if(Health <= 0)
-	{
 		Die();
+	else
+		Health -= Damage;
+	
+	switch (DamageType)
+	{
+	case EAttackType::BULLET:
+		BulletHit();
+		break;;
+	case EAttackType::TAKEDOWN:
+		Takedown(DamageCauser);
+		break;
+	default:
+		break;
 	}
-	Health -= Damage;
 }
 
 void ASTLTBaseCharacter::Die()

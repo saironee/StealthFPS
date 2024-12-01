@@ -3,5 +3,6 @@
 UENUM(BlueprintType)
 enum class EGunType : uint8
 {
-	PISTOL		UMETA(DisplayName = Pistol),
+	HAND		UMETA(DisplayName = "Hand"),
+	M1911		UMETA(DisplayName = M1911),
 };

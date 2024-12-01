@@ -37,6 +37,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	TObjectPtr<class UCameraComponent> Camera;
 
+
+//Scene Setcion
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Takedown)
+	TObjectPtr<USceneComponent> TakedownScene;
+	
 //Input Section
 protected:
 	void Movement(const FInputActionValue& Value);
@@ -74,6 +80,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Takedwon")
 	uint8 bIsTakedwon : 1;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Takedwon")
+	uint8 bIsChoke : 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Takedwon")
+	EGunType CurrentGunType;
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input")
@@ -118,8 +130,4 @@ protected:
 	float CameraTargetOffset;
 	float CameraTargetHeightOffset;
 	EMovementType CurrentMovementType;
-
-//Animation
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Aniamtion)
-	TSubclassOf<UAnimInstance> AnimInstance;
 };
