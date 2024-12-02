@@ -11,6 +11,7 @@
 #include "DataAssets/MovementDataAsset.h"
 #include <GameFramework/CharacterMovementComponent.h>
 #include "Mecro/STLTLivingEntity.h"
+#include <Components/SkeletalMeshComponent.h>
 #include "Components/CapsuleComponent.h"
 #include "Gun/Gun.h"
 #include "Characters/STLTEmemyCharacter.h"
@@ -32,7 +33,7 @@ MyGun(nullptr)
 	
 	//Set Body
 	 const ConstructorHelpers::FObjectFinder<USkeletalMesh>
-		BodyRef(TEXT("/Game/Arms/PlayerArm/PlayerArm.PlayerArm"));
+	 	BodyRef(TEXT("/Game/Arms/PlayerArm/PlayerArm.PlayerArm"));
 	 if(BodyRef.Succeeded())
 	 	GetMesh()->SetSkeletalMesh(BodyRef.Object);
 
@@ -104,10 +105,10 @@ void ASTLTPlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(IMCDefault, 0);
 		}else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Add Mapping 안됨 ㅅㅂ"))
+			UE_LOG(LogTemp, Warning, TEXT("Fail Add Mapping"))
 		}
 	}else
-		UE_LOG(LogTemp, Warning, TEXT("APlyerController Cast 안됨 ㅅㅂ"))
+		UE_LOG(LogTemp, Warning, TEXT("Fail APlyerController Cast"))
 }
 
 void ASTLTPlayerCharacter::Tick(float DeltaTime)
